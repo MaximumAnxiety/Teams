@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BASE_URL } from '../../config';
+import styles from '../../styles/table.module.css'; // Import CSS module
 
 function MatchesTable() {
   const [matchTable, setMatchTable] = useState<string[][]>([]);
@@ -15,13 +16,10 @@ function MatchesTable() {
           throw new Error(`Error: ${response.statusText}`);
         }
         const data = await response.json();
-        setMatchTable(data);
+        const table = data.$values.map((item: any) => item.$values);
+        setMatchTable(table);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('An unknown error occurred');
-        }
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
         setLoading(false);
       }
@@ -39,21 +37,23 @@ function MatchesTable() {
   }
 
   return (
-    <div>
-      <h2>Matches Table</h2>
-      <table border={1} style={{ borderCollapse: 'collapse', width: '100%' }}>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Matches Table</h2>
+      <table className={styles.table}>
         <thead>
           <tr>
             {matchTable[0]?.map((header, index) => (
-              <th key={index}>{header}</th>
+              <th key={index} className={styles.header}>
+                {header}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {matchTable.slice(1).map((row, rowIndex) => (
-            <tr key={rowIndex}>
+            <tr key={rowIndex} className={styles.row}>
               {row.map((cell, cellIndex) => (
-                <td key={cellIndex} style={{ textAlign: 'center', padding: '8px' }}>
+                <td key={cellIndex} className={styles.cell}>
                   {cell}
                 </td>
               ))}

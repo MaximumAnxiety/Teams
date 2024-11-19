@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { Team } from '../../types/types'; // Adjusted import as it appears `types` isn't used
+import { Team } from '../../types/types'; // Ensure this type matches your data
 import { BASE_URL } from '../../config';
+import styles from '../../styles/Standings.module.css'; // Import CSS module
 
 const SortedListComponent = () => {
   const [data, setData] = useState<Team[]>([]);
 
-  // Fetching data (use the example data until your server is ready)
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/teams`); // Fixed string interpolation
+        const response = await fetch(`${BASE_URL}/api/teams`);
         if (!response.ok) {
-          throw new Error(`Error: ${response.status}`); // Added error handling for HTTP response
+          throw new Error(`Error: ${response.status}`);
         }
 
-        const json: Team[] = await response.json();
+        const json = await response.json();
+        const teams = json.$values;
 
-        // Sort the data based on value, with null values placed at the end
-        const sortedData = json
-          .slice() // Make a shallow copy to avoid mutating the original array
-          .sort((a, b) => {
-            if (a.points === null) return 1; // Move `a` down if its value is null
-            if (b.points === null) return -1; // Move `b` down if its value is null
-            return b.points - a.points; // Sort in descending order
+        const sortedData = teams
+          .slice()
+          .sort((a: Team, b: Team) => {
+            if (a.points === null) return 1;
+            if (b.points === null) return -1;
+            return b.points - a.points;
           });
 
         setData(sortedData);
@@ -35,13 +35,13 @@ const SortedListComponent = () => {
   }, []);
 
   return (
-    <div>
-      {JSON.stringify(data)}
-      <h2>Sorted List</h2>
-      <ul>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Standings</h2>
+      <ul className={styles.list}>
         {data.map((item) => (
-          <li key={item.id}>
-            {item.name}: {item.points !== null ? item.points : 'TBD'}
+          <li key={item.id} className={styles.listItem}>
+            <span className={styles.teamName}>{item.name}</span>
+            <span className={styles.points}>{item.points !== null ? item.points : 'TBD'}</span>
           </li>
         ))}
       </ul>

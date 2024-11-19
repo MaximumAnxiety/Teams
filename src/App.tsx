@@ -7,10 +7,10 @@ function App() {
  
 
   return (
-    <>
+    <div className='container'>
       <Standings></Standings>
       <Table></Table>
-    </>
+    </div>
   )
 }
 
